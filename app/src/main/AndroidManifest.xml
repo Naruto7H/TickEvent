@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Exact Alarms for zero-hour triggers & daily/hourly widget precision -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
+    <!-- Re-register alarms after device reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Milestone & zero-hour push notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Android 11+ (API 30+) Package Visibility for External Action Triggers -->
+    <queries>
+        <!-- IRCTC Rail Connect -->
+        <package android:name="cris.org.in.prs.ima" />
+        <!-- Allow querying HTTPS browsers for fallback URLs -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".NextUpApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.NextUp">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Widget Configuration & Reconfiguration Activity -->
+        <activity
+            android:name=".widget.WidgetConfigActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Jetpack Glance Home Screen Widget Receiver -->
+        <receiver
+            android:name=".widget.NextUpWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.example.nextup.action.WIDGET_TICK" />
+                <action android:name="com.example.nextup.action.WIDGET_PINNED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nextup_widget_info" />
+        </receiver>
+
+        <!-- Milestone & Zero-Hour Notification Receiver -->
+        <receiver
+            android:name=".alarm.MilestoneAlarmReceiver"
+            android:exported="false" />
+
+        <!-- Reboot & App-Update Alarm Rescheduler -->
+        <receiver
+            android:name=".alarm.BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>
